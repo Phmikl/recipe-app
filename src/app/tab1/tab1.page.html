@@ -1,17 +1,34 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 1
+      Rezeptliste
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding" [fullscreen]="true">
+  <ion-list *ngIf="recipes.length !== 0">
+    <ion-item *ngFor="let file of recipes">
+      <ion-thumbnail slot="start">
+        <ion-img [src]="file.image.data"></ion-img>
+      </ion-thumbnail>
+      <ion-label class="ion-text-wrap">
+        {{ file.title }}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;" *ngIf="recipes.length === 0">
+    <div style="text-align: center;">
+      <ion-title size="large">Es ist ziemlich leer hier...</ion-title>
+      <ion-text ><h6>Erstelle zuerst mindestens ein Rezept und aktualisieren Sie die Anischt!</h6></ion-text>
+    </div>
+  </div>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 </ion-content>
+
+  
