@@ -1,3 +1,42 @@
-<p>
-  detail works!
-</p>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Rezeptliste
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [fullscreen]="true">
+  <ion-item lines="none">
+    <ion-text color="primary"><h1 style="font-size: 300%;">{{ recipe.title }}</h1></ion-text>
+  </ion-item>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Zutaten</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let item of recipe.ingredients">
+      <ion-row style="width: 100%;">
+        <ion-col size="7">
+          {{ item.name }}
+        </ion-col>
+        <ion-col size="3">
+          {{ item.amount }}
+        </ion-col>
+      </ion-row>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Beschreibung</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-text><p>{{ recipe.description }}</p></ion-text>
+    </ion-item>
+  </ion-list>
+  <ion-item style="width: 100%; margin: 5% 5%;">
+    <ion-img [src]="recipe.image.data" style="max-width: 90%;"></ion-img>
+  </ion-item>
+</ion-content>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Recipe } from 'src/models/Recipe';
 
 @Component({
@@ -9,7 +10,7 @@ import { Recipe } from 'src/models/Recipe';
 export class Tab1Page implements OnInit{
   recipes: Recipe[] = [];
 
-  constructor() {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
       this.refreshUserData();
@@ -33,5 +34,9 @@ export class Tab1Page implements OnInit{
     setTimeout(()=> {
       event.target.complete();
     }, 200);
+  }
+
+  navigateTo(id: number){
+    this.router.navigate(['/tabs/tab1/'+id]);
   }
 }

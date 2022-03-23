@@ -43,6 +43,7 @@ export class Tab2Page implements OnInit {
       });
       this.loadFiles();
       this.refreshUserData();
+      this.photoTaken = false;
   }
 
   //Recie Form
@@ -71,13 +72,15 @@ export class Tab2Page implements OnInit {
 
     this.presentToast();
     //reset
-    this.recipeForm = new FormGroup({
+    /* this.recipeForm = new FormGroup({
       title: new FormControl('', Validators.required),
       ingredients: new FormArray([]),
       description: new FormControl('', Validators.required)
-    });
-    this.photoTaken = false;
-    this.recipeForm.reset();
+    }); */
+    //(this.recipeForm.get('ingredients') as FormArray).reset();
+    this.ngOnInit();
+    //this.photoTaken = false;
+    //this.recipeForm.reset();
   }
 
 
