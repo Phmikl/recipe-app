@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
-import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Directory, Filesystem, FileWriteResult, WriteFileResult } from '@capacitor/filesystem';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { Ingredient } from 'src/models/Ingredient';
 import { Recipe } from 'src/models/Recipe';
@@ -147,7 +147,7 @@ export class Tab2Page implements OnInit {
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.Base64,
-      source: CameraSource.Camera
+      source: CameraSource.Prompt
     });
     console.log(image);
 
@@ -156,7 +156,6 @@ export class Tab2Page implements OnInit {
       this.photoTaken = true;
     }
   }
-
   async saveImage(photo: Photo){
     const fileName = /* new Date().getTime() */ (this.recipes.length+1) + '.jpeg';
     const savedFile = await Filesystem.writeFile({

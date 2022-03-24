@@ -1,0 +1,56 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Rezeptliste
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [fullscreen]="true">
+  <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+    <ion-label position="stacked" color="primary" style="font-size: 300%;" class="ion-margin">Titel</ion-label>
+    <ion-item>
+      <ion-input placeholder="Title" formControlName="title"></ion-input>
+    </ion-item>
+    <ion-list>
+      <ion-row style="width: 100%;">
+        <ion-col size="10">
+          <ion-label position="stacked" style="font-size: 200%;" class="ion-margin">Zutaten</ion-label>
+        </ion-col>
+        <ion-col size="2">
+          <ion-button role="button" (click)="addIngredient()" color="success">+</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-item>
+        <div formArrayName="ingredients" style="width: 100%;">
+          <ion-row *ngFor="let item of controls; let i = index" [formGroupName]="i" style="width: 100%; max-width: 700px;">
+          <ion-col size="7">
+            <ion-input placeholder="Name" formControlName="name"></ion-input>
+          </ion-col>
+          <ion-col size="3">
+            <ion-input placeholder="Anzahl" type="number" formControlName="amount"></ion-input>
+          </ion-col>
+          <ion-col size="1">
+            <ion-button color="danger" (click)="deleteIngredient(i)" >X</ion-button>
+          </ion-col>
+        </ion-row>
+      </div>
+    </ion-item>
+
+    </ion-list>
+    <ion-list>
+      <ion-label style="font-size: 200%;" class="ion-margin">Beschreibung</ion-label>
+      <ion-item>
+        <ion-textarea placeholder="Füge eine Beschreibung hinzu..." formControlName="description"></ion-textarea>
+      </ion-item>
+    </ion-list>
+    <ion-item style="width: 100%; margin: 5% 5%;">
+      <ion-img [src]="letztesPhoto" style="max-width: 90%;"></ion-img>
+    </ion-item>
+      <ion-button expand="block" color="success" type="success" [disabled]="!recipeForm.valid">Speichern</ion-button>
+  </form>
+  <ion-button expand="block" color="danger" (click)="deleteRecipe()">Löschen</ion-button>
+</ion-content>

@@ -29,7 +29,9 @@ export class DetailComponent implements OnInit {
     });
   }
 
-
+  navigateTo(){
+    this.router.navigate(['/tabs/tab1/'+this.id+'/edit']);
+  }
 
 
   refreshUserData(){

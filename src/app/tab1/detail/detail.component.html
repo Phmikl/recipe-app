@@ -15,7 +15,7 @@
   </ion-item>
   <ion-list>
     <ion-list-header>
-      <ion-label>Zutaten</ion-label>
+      <ion-label style="font-size: 200%;">Zutaten</ion-label>
     </ion-list-header>
     <ion-item *ngFor="let item of recipe.ingredients">
       <ion-row style="width: 100%;">
@@ -30,7 +30,7 @@
   </ion-list>
   <ion-list>
     <ion-list-header>
-      <ion-label>Beschreibung</ion-label>
+      <ion-label style="font-size: 200%;">Beschreibung</ion-label>
     </ion-list-header>
     <ion-item>
       <ion-text><p>{{ recipe.description }}</p></ion-text>
@@ -39,4 +39,6 @@
   <ion-item style="width: 100%; margin: 5% 5%;">
     <ion-img [src]="recipe.image.data" style="max-width: 90%;"></ion-img>
   </ion-item>
+
+  <ion-button (click)="navigateTo()" class="ion-margin">Bearbeiten</ion-button>
 </ion-content>
