@@ -12,7 +12,7 @@
       <ion-item button (click)="navigateTo(i)">
 
         <ion-thumbnail slot="start" style="--border-radius: 50%">
-          <ion-img [src]="file.image.data"></ion-img>
+          <ion-img [src]="images[i]?.data || 'assets/loading-spinner.gif'"></ion-img>
         </ion-thumbnail>
         <!-- <ion-avatar slot="start">
           <ion-img [src]="file.image.data"></ion-img>
@@ -28,6 +28,7 @@
     <div style="text-align: center;">
       <ion-title size="large">Es ist ziemlich leer hier...</ion-title>
       <ion-text ><h6>Erstelle zuerst mindestens ein Rezept und aktualisieren Sie die Anischt!</h6></ion-text>
+      <ion-text color="medium">Eventuell ist die Ansicht veraltet.</ion-text>
     </div>
   </div>
 

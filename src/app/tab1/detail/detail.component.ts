@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+/* eslint-disable max-len */
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { ImagesService, LocalFile } from 'src/app/services/images.service';
+import { RecipesService } from 'src/app/services/recipes.service';
 import { Recipe } from 'src/models/Recipe';
 
 @Component({
@@ -7,43 +11,50 @@ import { Recipe } from 'src/models/Recipe';
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss'],
 })
-export class DetailComponent implements OnInit {
+export class DetailComponent implements OnInit, OnDestroy {
   id: number;
   recipes: Recipe[] = [];
   recipe: Recipe;
-  constructor(private route: ActivatedRoute, private router: Router) { }
+  images: LocalFile[];
+  image: LocalFile;
+
+  routesub: Subscription;
+  imagesub: Subscription;
+  constructor(private route: ActivatedRoute, private router: Router, private recipeService: RecipesService, private imageService: ImagesService) { }
 
   ngOnInit() {
-    this.refreshUserData();
-    this.route.params.subscribe((params: Params) => {
+    this.recipeService.loadRecipes();
+    this.recipes = this.recipeService.getRecipes();
+
+    this.imagesub = this.imageService.newLatestImg.subscribe((img) => {
+      this.image = img;
+    });
+
+    this.routesub = this.route.params.subscribe((params: Params) => {
       this.id = +params.id;
       if(this.id < this.recipes.length){
         this.recipe = this.recipes[this.id];
+        this.imageService.loadFile(this.id);
       }
-      /* else if(this.recipes.length !== 0){
-        this.router.navigate(['../0'],  {relativeTo: this.route});
-      } */
       else{
         this.router.navigate(['/tabs'+'tab1']);
       }
     });
   }
 
+  ionViewWillEnter(){
+    this.recipeService.loadRecipes();
+    this.recipes = this.recipeService.getRecipes();
+    this.recipe = this.recipes[this.id];
+    this.imageService.loadFile(this.id);
+  }
+
   navigateTo(){
     this.router.navigate(['/tabs/tab1/'+this.id+'/edit']);
   }
 
-
-  refreshUserData(){
-    if(localStorage.getItem('recipes')){
-      const json = JSON.parse(localStorage.getItem('recipes'));
-      this.recipes = [];
-      for(const item of json){
-        this.recipes.push(new Recipe(item.title, item.ingredients, item.description, item.image));
-      }
-    }
-    else{
-      this.recipes = [];
-    }
-  }
+  ngOnDestroy(): void {
+    this.routesub.unsubscribe();
+    this.imagesub.unsubscribe();
+}
 }

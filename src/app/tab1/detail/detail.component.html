@@ -37,7 +37,7 @@
     </ion-item>
   </ion-list>
   <ion-item style="width: 100%; margin: 5% 5%;">
-    <ion-img [src]="recipe.image.data" style="max-width: 90%;"></ion-img>
+    <ion-img [src]="image?.data || 'assets/loading-spinner.gif'" style="max-width: 90%;"></ion-img>
   </ion-item>
 
   <ion-button (click)="navigateTo()" class="ion-margin">Bearbeiten</ion-button>

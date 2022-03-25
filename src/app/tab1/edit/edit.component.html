@@ -48,9 +48,11 @@
       </ion-item>
     </ion-list>
     <ion-item style="width: 100%; margin: 5% 5%;">
-      <ion-img [src]="letztesPhoto" style="max-width: 90%;"></ion-img>
+      <ion-img [src]="newPhotoTaken ? 'data:image/jpeg;base64, '+newImage?.base64String : latestImg?.data" style="max-width: 90%;"></ion-img>
     </ion-item>
-      <ion-button expand="block" color="success" type="success" [disabled]="!recipeForm.valid">Speichern</ion-button>
+
+    <ion-button expand="block" (click)="takeImage()">Neues Photo</ion-button>
+    <ion-button expand="block" color="success" type="success" [disabled]="!recipeForm.valid">Speichern</ion-button>
   </form>
   <ion-button expand="block" color="danger" (click)="deleteRecipe()">Löschen</ion-button>
 </ion-content>

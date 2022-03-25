@@ -47,7 +47,7 @@
       </ion-item>
       
       <ion-item *ngIf="photoTaken">
-          <ion-img [src]="latestImg.data"></ion-img>
+          <ion-img [src]="latestImg?.data"></ion-img>
       </ion-item>
         
 
@@ -56,19 +56,5 @@
     </form>
   </ion-list>
 
-
-
-
-  <!-- <ion-list>
-    <ion-item *ngFor="let file of recipes">
-      <ion-thumbnail slot="start">
-        <ion-img [src]="file.image.data"></ion-img>
-      </ion-thumbnail>
-      <ion-label class="ion-text-wrap">
-        {{ file.image.name }}
-      </ion-label>
-    </ion-item>
-  </ion-list> -->
-
-  <ion-button color="danger" (click)="reset()">Reset</ion-button>
+  <ion-button style="margin-top: 20%;" expand="block" color="danger" (click)="reset()">Reset</ion-button>
 </ion-content>

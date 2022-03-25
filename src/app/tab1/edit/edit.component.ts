@@ -1,10 +1,13 @@
 /* eslint-disable max-len */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { ImagesService } from 'src/app/services/images.service';
+import { RecipesService } from 'src/app/services/recipes.service';
 import { Ingredient } from 'src/models/Ingredient';
 import { Recipe } from 'src/models/Recipe';
 
@@ -19,37 +22,49 @@ export interface LocalFile {
   templateUrl: './edit.component.html',
   styleUrls: ['./edit.component.scss'],
 })
-export class EditComponent implements OnInit {
+export class EditComponent implements OnInit, OnDestroy {
 
   id: number;
   recipes: Recipe[] = [];
   recipe: Recipe;
 
-  images: LocalFile[] = [];
+  newImage: Photo;
+  newPhotoTaken: boolean;
   latestImg: LocalFile;
-  letztesPhoto: string;
   recipeForm: FormGroup;
-  constructor(private route: ActivatedRoute, private router: Router, private loadinCtrl: LoadingController, private alertController: AlertController) { }
+
+  routesub: Subscription;
+  imagesub: Subscription;
+  constructor(private route: ActivatedRoute, private router: Router, private loadinCtrl: LoadingController, private alertController: AlertController,
+              private recipeService: RecipesService, private imageService: ImagesService) { }
 
   get controls() {
     return (this.recipeForm.get('ingredients') as FormArray).controls;
   }
 
   ngOnInit() {
-    this.refreshUserData();
-    this.route.params.subscribe((params: Params) => {
+    this.recipes = this.recipeService.getRecipes();
+    this.routesub = this.route.params.subscribe((params: Params) => {
       this.id = +params.id;
       if(this.id < this.recipes.length){
         this.recipe = this.recipes[this.id];
+        this.imageService.loadFile(this.id);
+        this.newPhotoTaken = false;
       }
-      /* else if(this.recipes.length !== 0){
-        this.router.navigate(['../0'],  {relativeTo: this.route});
-      } */
       else{
         this.router.navigate(['/tabs'+'tab1']);
       }
     });
 
+    this.initForm();
+
+    this.imagesub = this.imageService.newLatestImg.subscribe((img) => {
+      this.latestImg = img;
+    });
+  }
+
+  //Form------------------------------------------------------------------------------------------------------------------------
+  initForm(){
     this.recipeForm = new FormGroup({
       title: new FormControl(this.recipe.title, Validators.required),
       ingredients: new FormArray([]),
@@ -63,19 +78,6 @@ export class EditComponent implements OnInit {
         })
       );
     }
-
-    this.letztesPhoto = this.recipe.image.data;
-    //this.loadFiles();
-  }
-
-  onSubmit(){
-    const ingredients: Ingredient[] = [];
-    for(const item of this.recipeForm.value.ingredients){
-      ingredients.push(new Ingredient(item.name, item.amount));
-    }
-
-    this.recipes[this.id] = new Recipe(this.recipeForm.value.title, ingredients, this.recipeForm.value.description, this.recipes[this.id].image);
-    localStorage.setItem('recipes', JSON.stringify(this.recipes));
   }
 
   addIngredient(){
@@ -90,11 +92,38 @@ export class EditComponent implements OnInit {
     (this.recipeForm.get('ingredients') as FormArray).removeAt(index);
   }
 
+  //-----------------------------------------------------------------------------------------------------------------------
+  takeImage(){
+    this.imageService.takeImage(this.id, false).then(result => {
+      this.newImage = result;
+      this.newPhotoTaken = true;
+      console.log(this.newImage);
+    }, async (err) => {
+      console.log('err: ', err);
+    });
+  }
+
+
+  onSubmit(){
+    const ingredients: Ingredient[] = [];
+    for(const item of this.recipeForm.value.ingredients){
+      ingredients.push(new Ingredient(item.name, item.amount));
+    }
+    this.recipeService.changeRecipe(this.id, new Recipe(this.recipeForm.value.title, ingredients, this.recipeForm.value.description));
+
+    if(this.newPhotoTaken){
+      this.imageService.saveImage(this.newImage, this.id);
+    }
+    this.router.navigate(['/tabs/tab1']);
+  }
+
   deleteRecipe(){
     this.presentAlertConfirm();
     /* this.recipes.splice(this.id, 1);
     localStorage.setItem('recipes', JSON.stringify(this.recipes)); */
   }
+
+
   async presentAlertConfirm() {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
@@ -114,8 +143,7 @@ export class EditComponent implements OnInit {
           id: 'confirm-button',
           handler: () => {
             console.log('Confirm Okay');
-            this.recipes.splice(this.id, 1);
-            localStorage.setItem('recipes', JSON.stringify(this.recipes));
+            this.recipeService.deleteRecipe(this.id);
             this.router.navigate(['/tabs/tab1']);
           }
         }
@@ -125,18 +153,8 @@ export class EditComponent implements OnInit {
   }
 
 
-
-  refreshUserData(){
-    if(localStorage.getItem('recipes')){
-      const json = JSON.parse(localStorage.getItem('recipes'));
-      this.recipes = [];
-      for(const item of json){
-        this.recipes.push(new Recipe(item.title, item.ingredients, item.description, item.image));
-      }
-    }
-    else{
-      this.recipes = [];
-    }
+  ngOnDestroy(): void {
+      this.routesub.unsubscribe();
+      this.imagesub.unsubscribe();
   }
-
 }

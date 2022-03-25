@@ -1,6 +1,9 @@
+/* eslint-disable max-len */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Recipe } from 'src/models/Recipe';
+import { ImagesService, LocalFile } from '../services/images.service';
+import { RecipesService } from '../services/recipes.service';
 
 @Component({
   selector: 'app-tab1',
@@ -9,31 +12,33 @@ import { Recipe } from 'src/models/Recipe';
 })
 export class Tab1Page implements OnInit{
   recipes: Recipe[] = [];
+  images: LocalFile[] = [];
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(private router: Router, private route: ActivatedRoute, private imageService: ImagesService, private recipeService: RecipesService) {}
 
   ngOnInit(): void {
-      this.refreshUserData();
+    this.recipeService.loadRecipes();
+    this.recipes = this.recipeService.getRecipes();
+    this.imageService.loadAllFiles();
+    this.images = this.imageService.images;
   }
 
-  refreshUserData(){
-    if(localStorage.getItem('recipes')){
-      const json = JSON.parse(localStorage.getItem('recipes'));
-      this.recipes = [];
-      for(const item of json){
-        this.recipes.push(new Recipe(item.title, item.ingredients, item.description, item.image));
-      }
-    }
-    else{
-      this.recipes = [];
-    }
+  ionViewWillEnter(){
+    this.recipeService.loadRecipes();
+    this.recipes = this.recipeService.getRecipes();
+    this.imageService.loadAllFiles();
+    this.images = this.imageService.images;
   }
 
-  doRefresh(event) {
-    this.refreshUserData();
+
+  doRefresh(event: any) {
+    this.recipeService.loadRecipes();
+    this.recipes = this.recipeService.getRecipes();
+    this.imageService.loadAllFiles();
+    this.images = this.imageService.images;
     setTimeout(()=> {
       event.target.complete();
-    }, 200);
+    }, 300);
   }
 
   navigateTo(id: number){
